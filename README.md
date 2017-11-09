@@ -1,2 +1,3 @@
 # callbackbot
-A Callback Service which forward the content to telegram subscribers
+
+A Callback Service which forwards the content to telegram subscribers.
