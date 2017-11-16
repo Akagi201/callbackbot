@@ -122,6 +122,16 @@ func cmdStart(msg *tgbotapi.Message) {
 		log.Infof("New user: @%v", msg.Chat.UserName)
 		chatIDs = append(chatIDs, cast.ToString(msg.Chat.ID))
 		KVStore.Put("chat_ids", []byte(strings.Join(chatIDs[:], ",")), nil)
+
+		m := tgbotapi.NewMessage(msg.Chat.ID, "Nice, subscribe notification success!")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
+	} else {
+		m := tgbotapi.NewMessage(msg.Chat.ID, "You already subscribed the notification")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
 	}
 }
 
@@ -139,6 +149,16 @@ func cmdStop(msg *tgbotapi.Message) {
 		log.Infof("Remove user: @%v", msg.Chat.UserName)
 		chatIDs = remove(chatIDs, cast.ToString(msg.Chat.ID))
 		KVStore.Put("chat_ids", []byte(strings.Join(chatIDs[:], ",")), nil)
+
+		m := tgbotapi.NewMessage(msg.Chat.ID, "You have been removed from the notification list")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
+	} else {
+		m := tgbotapi.NewMessage(msg.Chat.ID, "You are not on the notification list")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
 	}
 }
 
