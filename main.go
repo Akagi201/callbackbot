@@ -92,6 +92,8 @@ func message(msg *tgbotapi.Message) {
 			cmdSettings(msg)
 		case "stop":
 			cmdStop(msg)
+		case "whoami":
+			cmdWhoami(msg)
 		default:
 			cmdEasterEgg(msg)
 		}
@@ -160,6 +162,19 @@ func cmdStop(msg *tgbotapi.Message) {
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 	}
+}
+
+func cmdWhoami(msg *tgbotapi.Message) {
+	resp := fmt.Sprintf("You ID is %v.", msg.Chat.ID)
+	if contains(chatIDs, cast.ToString(msg.Chat.ID)) {
+		resp += "And You are on the notification list."
+	} else {
+		resp += "And You are not on the notification list."
+	}
+	m := tgbotapi.NewMessage(msg.Chat.ID, resp)
+	m.ParseMode = "markdown"
+	m.DisableWebPagePreview = true
+	bot.Send(m)
 }
 
 func cmdHelp(msg *tgbotapi.Message) {

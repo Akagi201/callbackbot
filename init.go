@@ -12,7 +12,7 @@ import (
 
 var opts struct {
 	Conf       string   `long:"conf" description:"config file"`
-	BotToken   string   `long:"bot-token" default:"440925787:AAFrM4aJaB6tfdT-oPJ11oLQtMHWiML6W2s" description:"telegram bot token"`
+	BotToken   string   `long:"bot-token" default:"" description:"telegram bot token"`
 	ListenAddr string   `long:"listen" default:":3000" description:"HTTP listen addr"`
 	Store      string   `long:"store" default:"boltdb" description:"store engine"`
 	DBPath     []string `long:"dbpath" default:"./data.db" description:"dbpath for different dbs"`
