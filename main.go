@@ -21,6 +21,7 @@ import (
 var (
 	bot     *tgbotapi.BotAPI
 	chatIDs []string
+	authIDs []string
 	KVStore store.Store
 )
 
@@ -50,11 +51,21 @@ func initDB() {
 }
 
 func initData() {
-	pair, err := KVStore.Get("chat_ids")
-	if err != nil {
-		return
+	{
+		pair, err := KVStore.Get("chat_ids")
+		if err != nil {
+			return
+		}
+		chatIDs = strings.Split(string(pair.Value), ",")
 	}
-	chatIDs = strings.Split(string(pair.Value), ",")
+
+	{
+		pair, err := KVStore.Get("auth_ids")
+		if err != nil {
+			return
+		}
+		authIDs = strings.Split(string(pair.Value), ",")
+	}
 }
 
 func setUpdates() <-chan tgbotapi.Update {
@@ -94,6 +105,10 @@ func message(msg *tgbotapi.Message) {
 			cmdStop(msg)
 		case "whoami":
 			cmdWhoami(msg)
+		case "addid":
+			cmdAddid(msg)
+		case "rmid":
+			cmdRmid(msg)
 		default:
 			cmdEasterEgg(msg)
 		}
@@ -120,6 +135,14 @@ func contains(slice []string, item string) bool {
 }
 
 func cmdStart(msg *tgbotapi.Message) {
+	if !contains(authIDs, cast.ToString(msg.Chat.ID)) {
+		m := tgbotapi.NewMessage(msg.Chat.ID, "You are not on auth ids, contact @Akagi201")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
+		return
+	}
+
 	if !contains(chatIDs, cast.ToString(msg.Chat.ID)) {
 		log.Infof("New user: @%v", msg.Chat.UserName)
 		chatIDs = append(chatIDs, cast.ToString(msg.Chat.ID))
@@ -175,6 +198,59 @@ func cmdWhoami(msg *tgbotapi.Message) {
 	m.ParseMode = "markdown"
 	m.DisableWebPagePreview = true
 	bot.Send(m)
+}
+
+func cmdAddid(msg *tgbotapi.Message) {
+	if msg.Chat.ID != 89606473 {
+		m := tgbotapi.NewMessage(msg.Chat.ID, "Only @Akagi201 can do this!")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
+		return
+	}
+
+	if !contains(authIDs, msg.CommandArguments()) {
+		log.Infof("Add new auth user: %v", msg.CommandArguments())
+		authIDs = append(authIDs, msg.CommandArguments())
+		KVStore.Put("auth_ids", []byte(strings.Join(authIDs[:], ",")), nil)
+
+		m := tgbotapi.NewMessage(msg.Chat.ID, "Nice, added to auth id success!")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
+	} else {
+		m := tgbotapi.NewMessage(msg.Chat.ID, "The id is already in the auth ids")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
+	}
+}
+
+func cmdRmid(msg *tgbotapi.Message) {
+	if msg.Chat.ID != 89606473 {
+		m := tgbotapi.NewMessage(msg.Chat.ID, "Only @Akagi201 can do this!")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
+		return
+	}
+
+	if contains(authIDs, msg.CommandArguments()) {
+		log.Infof("Remove auth user: %v", msg.CommandArguments())
+		authIDs = remove(authIDs, msg.CommandArguments())
+		KVStore.Put("auth_ids", []byte(strings.Join(authIDs[:], ",")), nil)
+
+		m := tgbotapi.NewMessage(msg.Chat.ID, "Nice, removed from auth ids")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
+	} else {
+		m := tgbotapi.NewMessage(msg.Chat.ID, "The ID is not in the auth ids")
+		m.ParseMode = "markdown"
+		m.DisableWebPagePreview = true
+		bot.Send(m)
+	}
+
 }
 
 func cmdHelp(msg *tgbotapi.Message) {
