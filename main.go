@@ -137,7 +137,6 @@ func contains(slice []string, item string) bool {
 func cmdStart(msg *tgbotapi.Message) {
 	if !contains(authIDs, cast.ToString(msg.Chat.ID)) {
 		m := tgbotapi.NewMessage(msg.Chat.ID, "You are not on auth ids, contact @Akagi201")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 		return
@@ -149,12 +148,10 @@ func cmdStart(msg *tgbotapi.Message) {
 		KVStore.Put("chat_ids", []byte(strings.Join(chatIDs[:], ",")), nil)
 
 		m := tgbotapi.NewMessage(msg.Chat.ID, "Nice, subscribe notification success!")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 	} else {
 		m := tgbotapi.NewMessage(msg.Chat.ID, "You already subscribed the notification")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 	}
@@ -176,12 +173,10 @@ func cmdStop(msg *tgbotapi.Message) {
 		KVStore.Put("chat_ids", []byte(strings.Join(chatIDs[:], ",")), nil)
 
 		m := tgbotapi.NewMessage(msg.Chat.ID, "You have been removed from the notification list")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 	} else {
 		m := tgbotapi.NewMessage(msg.Chat.ID, "You are not on the notification list")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 	}
@@ -195,7 +190,6 @@ func cmdWhoami(msg *tgbotapi.Message) {
 		resp += "And You are not on the notification list."
 	}
 	m := tgbotapi.NewMessage(msg.Chat.ID, resp)
-	m.ParseMode = "markdown"
 	m.DisableWebPagePreview = true
 	bot.Send(m)
 }
@@ -203,7 +197,6 @@ func cmdWhoami(msg *tgbotapi.Message) {
 func cmdAddid(msg *tgbotapi.Message) {
 	if msg.Chat.ID != 89606473 {
 		m := tgbotapi.NewMessage(msg.Chat.ID, "Only @Akagi201 can do this!")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 		return
@@ -215,12 +208,10 @@ func cmdAddid(msg *tgbotapi.Message) {
 		KVStore.Put("auth_ids", []byte(strings.Join(authIDs[:], ",")), nil)
 
 		m := tgbotapi.NewMessage(msg.Chat.ID, "Nice, added to auth id success!")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 	} else {
 		m := tgbotapi.NewMessage(msg.Chat.ID, "The id is already in the auth ids")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 	}
@@ -229,7 +220,6 @@ func cmdAddid(msg *tgbotapi.Message) {
 func cmdRmid(msg *tgbotapi.Message) {
 	if msg.Chat.ID != 89606473 {
 		m := tgbotapi.NewMessage(msg.Chat.ID, "Only @Akagi201 can do this!")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 		return
@@ -241,12 +231,10 @@ func cmdRmid(msg *tgbotapi.Message) {
 		KVStore.Put("auth_ids", []byte(strings.Join(authIDs[:], ",")), nil)
 
 		m := tgbotapi.NewMessage(msg.Chat.ID, "Nice, removed from auth ids")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 	} else {
 		m := tgbotapi.NewMessage(msg.Chat.ID, "The ID is not in the auth ids")
-		m.ParseMode = "markdown"
 		m.DisableWebPagePreview = true
 		bot.Send(m)
 	}
@@ -326,7 +314,6 @@ func callbackHandler(w http.ResponseWriter, req *http.Request) {
 func publish(text string) {
 	for _, v := range chatIDs {
 		msg := tgbotapi.NewMessage(cast.ToInt64(v), text)
-		msg.ParseMode = "markdown"
 		msg.DisableWebPagePreview = true
 		bot.Send(msg)
 	}
